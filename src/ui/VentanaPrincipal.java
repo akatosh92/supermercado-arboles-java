@@ -52,10 +52,12 @@ public class VentanaPrincipal extends JFrame {
 
         JButton btnInsertar = new JButton("Insertar");
         JButton btnEliminar = new JButton("Eliminar");
+        JButton btnBuscar = new JButton("Buscar");
         JButton btnTicket = new JButton("Generar Ticket");
 
         panelControles.add(btnInsertar);
         panelControles.add(btnEliminar);
+        panelControles.add(btnBuscar);
         panelControles.add(btnTicket);
 
         add(panelControles, BorderLayout.WEST);
@@ -84,11 +86,20 @@ public class VentanaPrincipal extends JFrame {
                 arbol.insertar(producto);
 
                 panelArbol.repaint();
+                
+                // LIMPIAR CAMPOS
+                campoId.setText("");
+                campoNombre.setText("");
+                campoCantidad.setText("");
+                campoPrecio.setText("");
 
+                // Regresar el cursor al campo ID
+                campoId.requestFocus();
+            
             } catch (Exception ex) {
-
+                
                 JOptionPane.showMessageDialog(this,"Datos inválidos");
-
+            
             }
 
         });
@@ -110,6 +121,31 @@ public class VentanaPrincipal extends JFrame {
 
             }
 
+        });
+        
+        // BOTON BUSCAR
+        btnBuscar.addActionListener(e -> {
+            
+            try {
+                
+                int id = Integer.parseInt(campoId.getText());
+                
+                Producto producto = arbol.buscar(id);
+                
+                if (producto != null) {
+                    
+                    campoNombre.setText(producto.getNombre());
+                    campoCantidad.setText(String.valueOf(producto.getCantidad()));
+                    campoPrecio.setText(String.valueOf(producto.getPrecioUnitario()));
+                
+                } else {
+                    JOptionPane.showMessageDialog(this,"Producto no encontrado");
+                }
+            
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,"ID inválido");
+            }
+        
         });
 
         // BOTON TICKET
