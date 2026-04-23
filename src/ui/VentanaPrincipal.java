@@ -9,136 +9,115 @@ import java.awt.*;
 public class VentanaPrincipal extends JFrame {
 
     private ArbolBinarioBusqueda arbol;
+    private PanelArbol panelArbol;
 
-    private JTextField txtId;
-    private JTextField txtNombre;
-    private JTextField txtCantidad;
-    private JTextField txtPrecio;
+    private JTextField campoId;
+    private JTextField campoNombre;
+    private JTextField campoCantidad;
+    private JTextField campoPrecio;
 
-    private JTextArea areaSalida;
+    private JTextArea areaTicket;
 
     public VentanaPrincipal() {
 
         arbol = new ArbolBinarioBusqueda();
 
-        setTitle("Sistema de Ventas - ABB");
-        setSize(500,400);
+        setTitle("Sistema de Ventas con ABB");
+        setSize(900,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
         setLayout(new BorderLayout());
 
-        JPanel panelFormulario = new JPanel(new GridLayout(4,2));
+        // PANEL DEL ARBOL
+        panelArbol = new PanelArbol(arbol);
+        add(panelArbol, BorderLayout.CENTER);
 
-        panelFormulario.add(new JLabel("ID"));
-        txtId = new JTextField();
-        panelFormulario.add(txtId);
+        // PANEL DE CONTROLES
+        JPanel panelControles = new JPanel(new GridLayout(6,2));
 
-        panelFormulario.add(new JLabel("Nombre"));
-        txtNombre = new JTextField();
-        panelFormulario.add(txtNombre);
+        panelControles.add(new JLabel("ID:"));
+        campoId = new JTextField();
+        panelControles.add(campoId);
 
-        panelFormulario.add(new JLabel("Cantidad"));
-        txtCantidad = new JTextField();
-        panelFormulario.add(txtCantidad);
+        panelControles.add(new JLabel("Nombre:"));
+        campoNombre = new JTextField();
+        panelControles.add(campoNombre);
 
-        panelFormulario.add(new JLabel("Precio"));
-        txtPrecio = new JTextField();
-        panelFormulario.add(txtPrecio);
+        panelControles.add(new JLabel("Cantidad:"));
+        campoCantidad = new JTextField();
+        panelControles.add(campoCantidad);
 
-        add(panelFormulario, BorderLayout.NORTH);
-
-        JPanel panelBotones = new JPanel();
+        panelControles.add(new JLabel("Precio:"));
+        campoPrecio = new JTextField();
+        panelControles.add(campoPrecio);
 
         JButton btnInsertar = new JButton("Insertar");
-        JButton btnBuscar = new JButton("Buscar");
         JButton btnEliminar = new JButton("Eliminar");
-        JButton btnTicket = new JButton("Ticket");
+        JButton btnTicket = new JButton("Generar Ticket");
 
-        panelBotones.add(btnInsertar);
-        panelBotones.add(btnBuscar);
-        panelBotones.add(btnEliminar);
-        panelBotones.add(btnTicket);
+        panelControles.add(btnInsertar);
+        panelControles.add(btnEliminar);
+        panelControles.add(btnTicket);
 
-        add(panelBotones, BorderLayout.CENTER);
+        add(panelControles, BorderLayout.WEST);
 
-        areaSalida = new JTextArea();
-        JScrollPane scroll = new JScrollPane(areaSalida);
+        // AREA DEL TICKET
+        areaTicket = new JTextArea();
+        areaTicket.setEditable(false);
 
-        add(scroll, BorderLayout.SOUTH);
+        JScrollPane scrollTicket = new JScrollPane(areaTicket);
+        scrollTicket.setPreferredSize(new Dimension(300,0));
 
-        btnInsertar.addActionListener(e -> insertarProducto());
-        btnBuscar.addActionListener(e -> buscarProducto());
-        btnEliminar.addActionListener(e -> eliminarProducto());
-        btnTicket.addActionListener(e -> mostrarTicket());
-    }
+        add(scrollTicket, BorderLayout.EAST);
 
-    private void insertarProducto() {
+        // BOTON INSERTAR
+        btnInsertar.addActionListener(e -> {
 
-        try {
+            try {
 
-            int id = Integer.parseInt(txtId.getText());
-            String nombre = txtNombre.getText();
-            int cantidad = Integer.parseInt(txtCantidad.getText());
-            double precio = Double.parseDouble(txtPrecio.getText());
+                int id = Integer.parseInt(campoId.getText());
+                String nombre = campoNombre.getText();
+                int cantidad = Integer.parseInt(campoCantidad.getText());
+                double precio = Double.parseDouble(campoPrecio.getText());
 
-            Producto p = new Producto(id,nombre,cantidad,precio);
+                Producto producto = new Producto(id,nombre,cantidad,precio);
 
-            arbol.insertar(p);
+                arbol.insertar(producto);
 
-            areaSalida.append("Producto insertado\n");
+                panelArbol.repaint();
 
-        } catch(Exception ex) {
+            } catch (Exception ex) {
 
-            JOptionPane.showMessageDialog(this,"Error en los datos");
+                JOptionPane.showMessageDialog(this,"Datos inválidos");
 
-        }
+            }
 
-    }
+        });
 
-    private void buscarProducto() {
+        // BOTON ELIMINAR
+        btnEliminar.addActionListener(e -> {
 
-        try {
+            try {
 
-            int id = Integer.parseInt(txtId.getText());
+                int id = Integer.parseInt(campoId.getText());
 
-            Producto p = arbol.buscar(id);
+                arbol.eliminar(id);
 
-            if(p != null)
-                areaSalida.append("Encontrado: " + p + "\n");
-            else
-                areaSalida.append("No encontrado\n");
+                panelArbol.repaint();
 
-        } catch(Exception ex) {
+            } catch (Exception ex) {
 
-            JOptionPane.showMessageDialog(this,"Error en ID");
+                JOptionPane.showMessageDialog(this,"ID inválido");
 
-        }
+            }
 
-    }
+        });
 
-    private void eliminarProducto() {
+        // BOTON TICKET
+        btnTicket.addActionListener(e -> {
 
-        try {
+            areaTicket.setText(arbol.generarTicket());
 
-            int id = Integer.parseInt(txtId.getText());
-
-            arbol.eliminar(id);
-
-            areaSalida.append("Producto eliminado\n");
-
-        } catch(Exception ex) {
-
-            JOptionPane.showMessageDialog(this,"Error en ID");
-
-        }
-
-    }
-
-    private void mostrarTicket() {
-
-        areaSalida.append("\n--- TICKET ---\n");
-        arbol.generarTicket();
+        });
 
     }
 

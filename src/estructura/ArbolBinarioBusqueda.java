@@ -38,11 +38,11 @@ public class ArbolBinarioBusqueda {
             return new Nodo(producto);
         }
 
-        if (producto.getId() < actual.producto.getId()) {
-            actual.izquierdo = insertarRecursivo(actual.izquierdo, producto);
+        if (producto.getId() < actual.getProducto().getId()) {
+            actual.setIzquierdo(insertarRecursivo(actual.getIzquierdo(), producto));
         } 
-        else if (producto.getId() > actual.producto.getId()) {
-            actual.derecho = insertarRecursivo(actual.derecho, producto);
+        else if (producto.getId() > actual.getProducto().getId()) {
+            actual.setDerecho(insertarRecursivo(actual.getDerecho(), producto));
         }
 
         return actual;
@@ -56,7 +56,7 @@ public class ArbolBinarioBusqueda {
         Nodo resultado = buscarRecursivo(raiz, id);
 
         if (resultado != null) {
-            return resultado.producto;
+            return resultado.getProducto();
         }
 
         return null;
@@ -68,14 +68,14 @@ public class ArbolBinarioBusqueda {
             return null;
         }
 
-        if (actual.producto.getId() == id) {
+        if (actual.getProducto().getId() == id) {
             return actual;
         }
 
-        if (id < actual.producto.getId()) {
-            return buscarRecursivo(actual.izquierdo, id);
+        if (id < actual.getProducto().getId()) {
+            return buscarRecursivo(actual.getIzquierdo(), id);
         } else {
-            return buscarRecursivo(actual.derecho, id);
+            return buscarRecursivo(actual.getDerecho(), id);
         }
     }
 
@@ -98,53 +98,56 @@ public class ArbolBinarioBusqueda {
             return null;
         }
 
-        if (id < actual.producto.getId()) {
-            actual.izquierdo = eliminarRecursivo(actual.izquierdo, id);
+        if (id < actual.getProducto().getId()) {
+            actual.setIzquierdo(eliminarRecursivo(actual.getIzquierdo(), id));
         } 
-        else if (id > actual.producto.getId()) {
-            actual.derecho = eliminarRecursivo(actual.derecho, id);
+        else if (id > actual.getProducto().getId()) {
+            actual.setDerecho(eliminarRecursivo(actual.getDerecho(), id));
         } 
         else {
 
             // Caso 1: nodo sin hijos
-            if (actual.izquierdo == null && actual.derecho == null) {
+            if (actual.getIzquierdo() == null && actual.getDerecho() == null) {
                 return null;
             }
 
             // Caso 2: nodo con un hijo
-            if (actual.izquierdo == null) {
-                return actual.derecho;
+            if (actual.getIzquierdo() == null) {
+                return actual.getDerecho();
             }
 
-            if (actual.derecho == null) {
-                return actual.izquierdo;
+            if (actual.getDerecho() == null) {
+                return actual.getIzquierdo();
             }
 
             // Caso 3: nodo con dos hijos
-            Nodo sucesor = encontrarMinimo(actual.derecho);
+            Nodo sucesor = encontrarMinimo(actual.getDerecho());
 
-            actual.producto = sucesor.producto;
+            actual.setProducto(sucesor.getProducto());
 
-            actual.derecho = eliminarRecursivo(actual.derecho, sucesor.producto.getId());
+            actual.setDerecho(
+                    eliminarRecursivo(
+                            actual.getDerecho(),
+                            sucesor.getProducto().getId()));
         }
 
         return actual;
     }
 
     /**
-     * Encuentra el nodo con el valor mínimo (más a la izquierda).
+     * Encuentra el nodo con el valor mínimo.
      */
     private Nodo encontrarMinimo(Nodo nodo) {
 
-        while (nodo.izquierdo != null) {
-            nodo = nodo.izquierdo;
+        while (nodo.getIzquierdo() != null) {
+            nodo = nodo.getIzquierdo();
         }
 
         return nodo;
     }
 
     /**
-     * Muestra el recorrido del árbol en orden.
+     * Recorrido InOrden del árbol.
      */
     public void mostrarInOrden() {
         inOrdenRecursivo(raiz);
@@ -154,11 +157,11 @@ public class ArbolBinarioBusqueda {
 
         if (actual != null) {
 
-            inOrdenRecursivo(actual.izquierdo);
+            inOrdenRecursivo(actual.getIzquierdo());
 
-            System.out.println(actual.producto);
+            System.out.println(actual.getProducto());
 
-            inOrdenRecursivo(actual.derecho);
+            inOrdenRecursivo(actual.getDerecho());
         }
     }
 
@@ -175,44 +178,47 @@ public class ArbolBinarioBusqueda {
             return 0;
         }
 
-        double subtotal = actual.producto.calcularSubtotal();
+        double subtotal = actual.getProducto().calcularSubtotal();
 
         return subtotal
-                + calcularTotalRecursivo(actual.izquierdo)
-                + calcularTotalRecursivo(actual.derecho);
+                + calcularTotalRecursivo(actual.getIzquierdo())
+                + calcularTotalRecursivo(actual.getDerecho());
     }
 
     /**
-     * Genera el ticket de venta por consola.
+     * Genera el ticket de venta como texto (para GUI o consola).
      */
-    public void generarTicket() {
+    public String generarTicket() {
 
-        System.out.println("\n====== TICKET DE COMPRA ======");
-        System.out.println("ID | Producto | Cantidad | Precio | Subtotal");
+        StringBuilder ticket = new StringBuilder();
 
-        generarTicketRecursivo(raiz);
+        ticket.append("\n====== TICKET DE COMPRA ======\n");
+        ticket.append("ID | Producto | Cantidad | Precio | Subtotal\n");
 
-        System.out.println("--------------------------------");
-        System.out.println("TOTAL: " + calcularTotal());
+        generarTicketRecursivo(raiz, ticket);
+
+        ticket.append("--------------------------------\n");
+        ticket.append("TOTAL: ").append(calcularTotal());
+
+        return ticket.toString();
     }
 
-    private void generarTicketRecursivo(Nodo actual) {
+    private void generarTicketRecursivo(Nodo actual, StringBuilder ticket) {
 
         if (actual != null) {
 
-            generarTicketRecursivo(actual.izquierdo);
+            generarTicketRecursivo(actual.getIzquierdo(), ticket);
 
-            Producto p = actual.producto;
+            Producto p = actual.getProducto();
 
-            System.out.println(
-                    p.getId() + " | "
-                    + p.getNombre() + " | "
-                    + p.getCantidad() + " | "
-                    + p.getPrecioUnitario() + " | "
-                    + p.calcularSubtotal()
-            );
+            ticket.append(
+                    p.getId()).append(" | ")
+                    .append(p.getNombre()).append(" | ")
+                    .append(p.getCantidad()).append(" | ")
+                    .append(p.getPrecioUnitario()).append(" | ")
+                    .append(p.calcularSubtotal()).append("\n");
 
-            generarTicketRecursivo(actual.derecho);
+            generarTicketRecursivo(actual.getDerecho(), ticket);
         }
     }
 }

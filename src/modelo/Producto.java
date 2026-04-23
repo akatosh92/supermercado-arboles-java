@@ -11,20 +11,7 @@ public class Producto {
     private int cantidad;
     private double precioUnitario;
 
-    /**
-     * Constructor de la clase Producto.
-     * Incluye validaciones básicas para evitar datos inválidos.
-     */
     public Producto(int id, String nombre, int cantidad, double precioUnitario) {
-
-        if (cantidad <= 0) {
-            throw new IllegalArgumentException("La cantidad debe ser mayor que 0");
-        }
-
-        if (precioUnitario < 0) {
-            throw new IllegalArgumentException("El precio no puede ser negativo");
-        }
-
         this.id = id;
         this.nombre = nombre;
         this.cantidad = cantidad;
@@ -48,23 +35,18 @@ public class Producto {
     }
 
     /**
-     * Calcula el subtotal del producto (cantidad × precio unitario).
+     * Calcula el subtotal del producto (cantidad × precio)
      */
     public double calcularSubtotal() {
         return cantidad * precioUnitario;
     }
 
-    /**
-     * Representación en texto del producto.
-     * Se usa principalmente para mostrar información en consola.
-     */
     @Override
     public String toString() {
-
-        return "ID: " + id
-                + " | Producto: " + nombre
-                + " | Cantidad: " + cantidad
-                + " | Precio: " + precioUnitario
-                + " | Subtotal: " + calcularSubtotal();
+        return "ID: " + id +
+               " | Producto: " + nombre +
+               " | Cantidad: " + cantidad +
+               " | Precio: $" + precioUnitario +
+               " | Subtotal: $" + calcularSubtotal();
     }
 }
