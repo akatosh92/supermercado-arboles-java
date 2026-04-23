@@ -96,4 +96,54 @@ private double calcularTotalRecursivo(Nodo actual) {
            calcularTotalRecursivo(actual.izquierdo) +
            calcularTotalRecursivo(actual.derecho);
 }
+
+public void eliminar(int id) {
+    raiz = eliminarRecursivo(raiz, id);
+}
+
+private Nodo eliminarRecursivo(Nodo actual, int id) {
+
+    if (actual == null) {
+        return null;
+    }
+
+    if (id < actual.producto.getId()) {
+        actual.izquierdo = eliminarRecursivo(actual.izquierdo, id);
+    } 
+    else if (id > actual.producto.getId()) {
+        actual.derecho = eliminarRecursivo(actual.derecho, id);
+    } 
+    else {
+
+        // Caso 1: nodo sin hijos
+        if (actual.izquierdo == null && actual.derecho == null) {
+            return null;
+        }
+
+        // Caso 2: nodo con un solo hijo
+        if (actual.izquierdo == null) {
+            return actual.derecho;
+        }
+
+        if (actual.derecho == null) {
+            return actual.izquierdo;
+        }
+
+        // Caso 3: nodo con dos hijos
+        Nodo sucesor = encontrarMinimo(actual.derecho);
+        actual.producto = sucesor.producto;
+        actual.derecho = eliminarRecursivo(actual.derecho, sucesor.producto.getId());
+    }
+
+    return actual;
+}
+
+private Nodo encontrarMinimo(Nodo nodo) {
+
+    while (nodo.izquierdo != null) {
+        nodo = nodo.izquierdo;
+    }
+
+    return nodo;
+}
 }
